@@ -25,13 +25,15 @@ func TestCreate(t *testing.T) {
 	testCases := []struct {
 		name        string
 		reqVariants []model.Variant
+		pp          uuid.UUID
 		expVariants []model.Variant
 		modFunc     func([]model.Variant)
 		wantErr     error
 	}{
 		{
 			name:        "Valid",
-			reqVariants: []model.Variant{{ID: id, ProductID: productID, Color: "Black", Size: "8", Price: 80, Stock: 80}},
+			reqVariants: []model.Variant{{ID: id, ProductID: uuid.Nil, Color: "Black", Size: "8", Price: 80, Stock: 80}},
+			pp:          productID,
 			expVariants: []model.Variant{{ID: id, ProductID: productID, Color: "Black", Size: "8", Price: 80, Stock: 80}},
 			modFunc: func(variants []model.Variant) {
 				mockStore.EXPECT().Create(variants).Return(variants, nil)
@@ -40,7 +42,8 @@ func TestCreate(t *testing.T) {
 		},
 		{
 			name:        "SQL throws Error",
-			reqVariants: []model.Variant{{ID: id, ProductID: productID, Color: "color", Size: "9", Price: 80, Stock: 70}},
+			reqVariants: []model.Variant{{ID: id, ProductID: uuid.Nil, Color: "color", Size: "9", Price: 80, Stock: 70}},
+			pp:          productID,
 			expVariants: nil,
 			modFunc: func(variants []model.Variant) {
 				mockStore.EXPECT().Create(variants).Return(nil, sql.ErrConnDone)
@@ -49,10 +52,11 @@ func TestCreate(t *testing.T) {
 		},
 		{
 			name:        "Price Validation",
-			reqVariants: []model.Variant{{ID: id, ProductID: productID, Color: "B", Size: "8", Price: -1, Stock: 8}},
+			reqVariants: []model.Variant{{ID: id, ProductID: uuid.Nil, Color: "B", Size: "8", Price: -1, Stock: 8}},
+			pp:          productID,
 			expVariants: nil,
 			modFunc: func(variants []model.Variant) {
-				//We do not require a mock call here
+
 			},
 			wantErr: fmt.Errorf("Price cannot be negative"),
 		},
@@ -60,9 +64,15 @@ func TestCreate(t *testing.T) {
 
 	for _, test := range testCases {
 		test.modFunc(test.reqVariants)
-		result, err := Service.Create(test.reqVariants)
+		result, err := Service.Create(test.reqVariants, test.pp)
+
+		for i := range result {
+			result[i].ProductID = test.pp
+			result[i].ID = id
+
+		}
+
 		assert.Equal(t, test.expVariants, result)
 		assert.Equal(t, err, test.wantErr)
 	}
-
 }

@@ -3,6 +3,8 @@ package variant
 import (
 	"fmt"
 	"practice6/model"
+
+	"github.com/google/uuid"
 )
 
 type Service struct {
@@ -15,11 +17,13 @@ func New(store Store) Service {
 	}
 }
 
-func (s Service) Create(variants []model.Variant) ([]model.Variant, error) {
-	for _, variant := range variants {
+func (s Service) Create(variants []model.Variant, pid uuid.UUID) ([]model.Variant, error) {
+	for i, variant := range variants {
 		if variant.Price < 0 {
 			return nil, fmt.Errorf("Price cannot be negative")
 		}
+		variants[i].ID = uuid.New()
+		variants[i].ProductID = pid
 	}
 	resVariants, err := s.store.Create(variants)
 	if err != nil {
