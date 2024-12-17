@@ -19,6 +19,7 @@ func New(db *sql.DB) Store {
 func (s Store) Create(product *model.Product) (*model.Product, error) {
 	result, err := s.db.Exec("INSERT INTO products (id,name,description ) VALUES ( ?, ?, ?)", product.ID, product.Name, product.Descrption)
 	if err != nil {
+		fmt.Println(err)
 		return nil, fmt.Errorf("Some SQL error")
 	}
 

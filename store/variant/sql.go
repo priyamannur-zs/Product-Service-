@@ -2,6 +2,7 @@ package variant
 
 import (
 	"database/sql"
+	"fmt"
 	"practice6/model"
 )
 
@@ -16,8 +17,9 @@ func New(db *sql.DB) Store {
 }
 
 func (store Store) Create(variants []model.Variant) ([]model.Variant, error) {
-	stmt, err := store.db.Prepare("INSERT INTO variants(id, productID, color, size, price, stock) VALUES (?,?,?,?,?,?)")
+	stmt, err := store.db.Prepare("INSERT INTO variants(id, productID, color, vsize, vprice, stock_price) VALUES (?,?,?,?,?,?)")
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	var resultVariants []model.Variant
@@ -25,6 +27,7 @@ func (store Store) Create(variants []model.Variant) ([]model.Variant, error) {
 		var addedVar model.Variant
 		_, resErr := stmt.Exec(variant.ID, variant.ProductID, variant.Color, variant.Size, variant.Price, variant.Stock)
 		if resErr != nil {
+			fmt.Println(resErr)
 			return nil, resErr
 		}
 		addedVar = model.Variant{ID: variant.ID, ProductID: variant.ProductID, Color: variant.Color, Size: variant.Size, Price: variant.Price, Stock: variant.Stock}
