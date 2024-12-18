@@ -33,13 +33,15 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var creProduct *model.Product
-	creProduct = &product
-
+	creProduct := &product
 	resProduct, creErr := h.psvc.Create(creProduct)
+
 	if creErr != nil {
 		w.WriteHeader(400)
-		w.Write([]byte(creErr.Error()))
+		_, writeErr := w.Write([]byte(creErr.Error()))
+		if writeErr != nil {
+			fmt.Println(writeErr)
+		}
 		return
 	}
 
@@ -51,5 +53,8 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(201)
 
-	w.Write(mBody)
+	_, writeErr := w.Write(mBody)
+	if writeErr != nil {
+		fmt.Println(writeErr)
+	}
 }

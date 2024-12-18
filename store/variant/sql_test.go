@@ -72,3 +72,15 @@ func TestCreate(t *testing.T) {
 		assert.Equal(t, test.wantErr, err)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	// db, mock, err := sqlmock.New()
+	// if err == nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+
+	// testCases := []struct {
+	// }
+
+}

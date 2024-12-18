@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"practice6/model"
+
+	"github.com/google/uuid"
 )
 
 type Store struct {
@@ -34,4 +36,9 @@ func (store Store) Create(variants []model.Variant) ([]model.Variant, error) {
 		resultVariants = append(resultVariants, addedVar)
 	}
 	return resultVariants, nil
+}
+
+func (store Store) Delete(variantIDs uuid.UUID, productID uuid.UUID) error {
+
+	return nil
 }

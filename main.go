@@ -53,6 +53,9 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/product", handler.Create).Methods(http.MethodPost)
 
-	http.ListenAndServe(":8000", router)
+	err := http.ListenAndServe(":8000", router)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 }
